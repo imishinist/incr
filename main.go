@@ -70,6 +70,7 @@ func main() {
 		args := flag.Args()
 		filename = args[0]
 	}
+	filename = strings.TrimSuffix(filename, *suffix)
 	files, err := dirfiles(".")
 	if err != nil {
 		log.Fatal(err)
