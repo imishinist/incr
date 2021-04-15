@@ -1,10 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -37,12 +37,13 @@ func filterPrefix(prefix string, files []string) []string {
 	return ret
 }
 
-func getNextNum(prefix string, files []string) string {
+func getNextNum(prefix, suffix string, files []string) string {
 	re := regexp.MustCompile(`\d+`)
 
 	nums := make([]int, 0, len(files))
 	for _, file := range files {
 		stripped := strings.TrimPrefix(file, prefix)
+		stripped = strings.TrimSuffix(stripped, suffix)
 		num := re.FindStringSubmatch(stripped)
 
 		if len(num) > 0 {
@@ -61,15 +62,18 @@ func getNextNum(prefix string, files []string) string {
 }
 
 func main() {
-	n := len(os.Args)
+	suffix := flag.String("suffix", "", "")
+	flag.Parse()
+
 	filename := "incr"
-	if n > 1 {
-		filename = os.Args[1]
+	if flag.NArg() > 0 {
+		args := flag.Args()
+		filename = args[0]
 	}
 	files, err := dirfiles(".")
 	if err != nil {
 		log.Fatal(err)
 	}
 	filtered := filterPrefix(filename, files)
-	fmt.Print(filename + getNextNum(filename, filtered))
+	fmt.Print(filename + getNextNum(filename, *suffix, filtered) + *suffix)
 }
