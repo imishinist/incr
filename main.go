@@ -3,16 +3,20 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
+var (
+	re = regexp.MustCompile(`\d+`)
+)
+
 func dirfiles(dir string) ([]string, error) {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +42,6 @@ func filterPrefix(prefix string, files []string) []string {
 }
 
 func getNextNum(prefix, suffix string, files []string) string {
-	re := regexp.MustCompile(`\d+`)
-
 	nums := make([]int, 0, len(files))
 	for _, file := range files {
 		stripped := strings.TrimPrefix(file, prefix)
